@@ -96,7 +96,7 @@ export function SumarizeForm() {
             Continue
           </button>
         </form>
-      ) : (
+        ) : (
         <SummaryUpdateForm summaryRes={gotSummary} callBackHandlePublished={handlePublished} />
       )}
       {loadingStage && <p className="text-[12px] font-mono text-green-600 flex items-center gap-2 mt-2.5"><AiOutlineLoading3Quarters className="animate-spin" /> {loadingStage}</p>} 
