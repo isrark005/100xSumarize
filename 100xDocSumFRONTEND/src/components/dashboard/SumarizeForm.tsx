@@ -92,7 +92,7 @@ export function SumarizeForm() {
               required: false,
             })}
           />
-          <button className="w-full bg-blue-400 text-white py-2 font-mono uppercase rounded-lg mt-4 hover:bg-blue-700 transition">
+          <button className="w-full bg-blue-400 text-white py-2 font-mono uppercase rounded-md mt-4 hover:bg-blue-700 transition">
             Continue
           </button>
         </form>

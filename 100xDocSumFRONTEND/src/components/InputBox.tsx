@@ -36,7 +36,7 @@ const InputBox = React.forwardRef<HTMLInputElement, InputBoxProps>(
         )}
         <input
           type={type}
-          className={`px-4 py-2 mt-1 text-[13px] rounded-lg outline-none focus:outline-2 focus:outline-primary-color duration-200 border border-gray-200 w-full ${disableField ? "bg-[#F7F7F8] text-[#AEADB1]" : "bg-[#F7FAFF] text-black"} ${className}`}
+          className={`px-4 py-2 mt-1 text-[13px] rounded-md outline-none focus:outline-2 focus:outline-primary-color duration-200 border border-gray-200 w-full ${disableField ? "bg-[#F7F7F8] text-[#AEADB1]" : "bg-[#F7FAFF] text-black"} ${className}`}
           ref={ref}
           id={id}
           {...props}

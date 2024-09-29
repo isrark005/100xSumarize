@@ -29,7 +29,7 @@ export function PopUpComp({
       className="popup-wrapper fixed inset-0 bg-[#212735] bg-opacity-85  flex items-center justify-center z-[1000]"
     >
       <div
-        className={`popup-main relative w-[560px] bg-white px-8 ${doneBtn ? "py-6" : "pt-6"} ${tallModal ? "h-[100dvh] overflow-y-auto overflow-x-hidden flex flex-col justify-start max-md:m-3" : "rounded-xl max-w-[80%]"}`}
+        className={`popup-main relative w-[560px] bg-white px-8 ${doneBtn ? "py-6" : "pt-6"} ${tallModal ? "h-[100dvh] overflow-y-auto overflow-x-hidden flex flex-col justify-start max-md:m-3" : "rounded-lg max-w-[80%]"}`}
       >
         <span
           onClick={closePopup}
