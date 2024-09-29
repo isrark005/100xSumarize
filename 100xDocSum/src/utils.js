@@ -2,9 +2,11 @@
 import { NotionAPI } from 'notion-client';
 import { config } from './config.js';
 import OpenAI from "openai";
-import { sign } from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
 
+const { sign } = pkg
 const notion = new NotionAPI();
+
 
 export async function getPageContent(pageId) {
   if (pageId) {

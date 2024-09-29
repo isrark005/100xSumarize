@@ -1,5 +1,6 @@
 import { config } from "dotenv";
-import { verify } from "jsonwebtoken";
+import pkg from 'jsonwebtoken';
+const { verify } = pkg;
 
 export const onlyKiratRoutes = (req, res, next) => {
     const token = req.cookies.jwt;
