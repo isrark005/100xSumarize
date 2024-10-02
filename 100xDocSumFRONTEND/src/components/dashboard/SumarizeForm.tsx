@@ -30,10 +30,10 @@ export function SumarizeForm() {
   const [gotSummary, setGotSummary] = useState<initialResponse | null>(null);
   const [alreadyExsist, setAlreadyExsist] = useState(false);
   const [published, setPublished] = useState(false);
-  const [loadingStage, setLoadingStage] = useState<string | null>(null); // New state to manage loading stage
+  const [loadingStage, setLoadingStage] = useState<string | null>(null);
 
   const submitForm = (formData: formDataT) => {
-    setLoadingStage("Scraping data from notion page..."); // Initial loading message
+    setLoadingStage("Scraping data from notion page..."); 
 
     // Simulate scraping phase
     setTimeout(() => {
@@ -42,14 +42,14 @@ export function SumarizeForm() {
       MyQuestion(formData)
         .then((res: initialResponse) => {
           setGotSummary(res);
-          setLoadingStage(null); // Stop loading when complete
+          setLoadingStage(null); 
           if (res?.alreadyExists) setAlreadyExsist(true);
         })
         .catch((res) => {
           console.log(res);
-          setLoadingStage(null); // Stop loading on error
+          setLoadingStage(null);
         });
-    }, 3000); // Simulate a 3-second scraping phase
+    }, 3000); 
   };
 
   const handlePublished = () => {
@@ -67,7 +67,7 @@ export function SumarizeForm() {
     <div className="form-wrapper border px-4 py-6 rounded-lg">
       {alreadyExsist && (
         <p className="text-[10.5px] text-gray-600 font-mono">
-        Existing entry found! Create a new notion page if it's a different question or edit a summary.{" "}
+        Existing entry found! Rewrite a summary or publish a different notion page.{" "}
         <span onClick={resetForm} className="text-red-600 hover:underline cursor-pointer">&lt;Reset&gt;</span>
       </p>
       )}
@@ -99,6 +99,7 @@ export function SumarizeForm() {
         ) : (
         <SummaryUpdateForm summaryRes={gotSummary} callBackHandlePublished={handlePublished} />
       )}
+      
       {loadingStage && <p className="text-[12px] font-mono text-green-600 flex items-center gap-2 mt-2.5"><AiOutlineLoading3Quarters className="animate-spin" /> {loadingStage}</p>} 
       {published && <p>Published Successfully!</p>}
     </div>

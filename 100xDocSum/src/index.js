@@ -5,15 +5,16 @@ import { generateToken, getPageContent, summarizeContent } from './utils.js';
 import { SummaryDataModel } from './db.js';
 import cors from 'cors';
 import { onlyKiratRoutes } from './middleware.js';
-
+import cookieParser from 'cookie-parser';
 const app = express();
 
 
 mongoose.connect(config.dbUrl);
 
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 app.post('/my-question', async (req, res) => {
     const data = req.body;
@@ -111,30 +112,47 @@ app.get('/summaries', async (req, res) => {
     }
 });
 
-app.post('/verify-kirat', (req, res) => {
-    const { password } = req.body;
-  
-    
-    if (password === config.isKirat) {
-      const token = generateToken();
-      res.cookie('jwt', token, {
-        httpOnly: true, 
-        secure: process.env.NODE_ENV === 'production', 
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-      });
-  
-      return res.status(200).json({ message: 'Authenticated successfully' });
-    } else {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-  });
 
+
+// auth
+app.post('/auth/login-kirat', (req, res) => {
+    const { password } = req.body;
+    if (password === config.isKirat) {
+        const token = generateToken();
+        res.cookie('summaryAuthToken', token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            sameSite: "none"
+        });
+
+        return res.status(200).json({ message: 'Authenticated successfully' });
+    } else {
+        return res.status(401).json({ message: 'Invalid password' });
+    }
+});
+
+app.get('/auth/verify-kirat', (req, res) => {
+    
+    const token = req.cookies.summaryAuthToken;
+    if (!token) {
+        return res.status(400).json({ isAuthenticated: false });
+    }
+
+    try {
+        const user = jwt.verify(token, config.jwtSecret);
+        console.log(user)
+        return res.status(200).json({ isAuthenticated: true });
+    } catch (err) {
+        return res.json({ isAuthenticated: false });
+    }
+});
 
 // only kirat routes 
 app.get('/summary/mark-done', onlyKiratRoutes, (req, res) => {
-    
+
     res.json({ message: 'Summary marked as done' });
-  });
+});
 
 
 

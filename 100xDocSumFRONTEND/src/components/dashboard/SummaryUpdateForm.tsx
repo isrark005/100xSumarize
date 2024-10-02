@@ -41,7 +41,7 @@ export function SummaryUpdateForm({ summaryRes, callBackHandlePublished }: Summa
           required: "Please enter your summary",
         })}
       />
-      <button className="w-full bg-blue-400 text-white py-2 font-mono uppercase rounded-lg mt-4 hover:bg-blue-700 transition">
+      <button disabled={summaryLetterCount > 300} className="w-full bg-blue-400 text-white py-2 font-mono uppercase rounded-lg mt-4 hover:bg-blue-700 transition">
         Add my Summary
       </button>
     </form>
