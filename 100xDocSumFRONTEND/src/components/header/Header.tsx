@@ -13,7 +13,7 @@ export function Header() {
   };
   return (
     <header className="border-b">
-      <Container className="">
+      <Container className="max-md:px-4">
         <nav className="flex justify-between py-4 items-center">
           <div className="logo font-mono bg-gradient-to-b from-blue-400 to-blue-700 bg-clip-text text-2xl font-black tracking-tighter text-transparent min-[375px]:block">
             100xSumarize

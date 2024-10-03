@@ -64,7 +64,7 @@ export function SumarizeForm() {
   };
 
   return (
-    <div className="form-wrapper border px-4 py-6 rounded-lg">
+    <div className="form-wrapper border px-4 py-6 mb-5 rounded-lg">
       {alreadyExsist && (
         <p className="text-[10.5px] text-gray-600 font-mono">
         Existing entry found! Rewrite a summary or publish a different notion page.{" "}
