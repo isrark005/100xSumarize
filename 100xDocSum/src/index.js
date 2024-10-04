@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { config } from './config.js';
 import { generateToken, getPageContent, summarizeContent } from './utils.js';
-import { SummaryDataModel } from './db.js';
+import { SummaryDataModel, SummaryFlagModel } from './db.js';
 import cors from 'cors';
 import { onlyKiratRoutes } from './middleware.js';
 import cookieParser from 'cookie-parser';
@@ -15,6 +15,14 @@ mongoose.connect(config.dbUrl);
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+// check if accepting entries
+app.get('/submission-flag/status', async (req, res) => {
+    const submissionFlag = await SummaryFlagModel.findOne();
+    
+    res.json({ acceptingSubmissions: submissionFlag?.acceptEntry });
+  });
+
 
 app.post('/my-question', async (req, res) => {
     const data = req.body;
@@ -112,8 +120,6 @@ app.get('/summaries', async (req, res) => {
     }
 });
 
-
-
 // auth
 app.post('/auth/login-kirat', (req, res) => {
     const { password } = req.body;
@@ -148,14 +154,35 @@ app.get('/auth/verify-kirat', (req, res) => {
     }
 });
 
+app.post('/auth/logout', (req, res) => {
+   
+    res.clearCookie('summaryAuthToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+    });
+
+    return res.status(200).json({ message: 'Logged out successfully' });
+});
+
 // only kirat routes 
 app.get('/summary/mark-done', onlyKiratRoutes, (req, res) => {
-
     res.json({ message: 'Summary marked as done' });
 });
 
+// toggle submission flag
+app.post('/submission-flag/toggle', onlyKiratRoutes, async (req, res) => {
+    let submissionFlag = await SummaryFlagModel.findOne();
 
+    if (!submissionFlag) {
+      submissionFlag = new SummaryFlagModel();
+    }
+  
+  submissionFlag.acceptEntry = !submissionFlag.acceptEntry;
+  await submissionFlag.save();
 
+  res.json({ message: `Submissions are now ${submissionFlag.acceptEntry ? 'open' : 'closed'}` });
+});
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

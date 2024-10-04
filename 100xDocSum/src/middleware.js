@@ -1,9 +1,10 @@
-import { config } from "dotenv";
+
 import pkg from 'jsonwebtoken';
+import { config } from './config.js';
 const { verify } = pkg;
 
 export const onlyKiratRoutes = (req, res, next) => {
-    const token = req.cookies.jwt;
+    const token = req.cookies.summaryAuthToken;
     
     if (!token) {
       return res.status(401).json({ message: 'Not authorized, no token' });
