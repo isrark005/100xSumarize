@@ -8,3 +8,46 @@
     border-radius: 20px;
     cursor: pointer;
   }
+
+
+  /* CSS for toggle switch */
+
+  .switch-input {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+  
+  .switch-input + label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 50px;
+    /* height: 100px; */
+    aspect-ratio: 2/1;
+    background: grey;
+    display: block;
+    border-radius: 100px;
+    position: relative;
+  }
+  
+  .switch-input + label:after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 19.5px;
+    aspect-ratio: 1/1;
+    background: #fff;
+    border-radius: 90px;
+    transition: 0.3s;
+  }
+  
+  .switch-input:checked + label {
+    background: #60a5fa;
+  }
+  
+  .switch-input:checked + label:after {
+    left: calc(100% - 5px);
+    transform: translateX(-100%);
+  }
+  

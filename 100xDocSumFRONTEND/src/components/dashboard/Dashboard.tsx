@@ -1,4 +1,5 @@
 import { Container } from "../Container";
+import { KiratControllers } from "./KiratControllers";
 import { MobileFormPopup } from "./MobileFormPopup";
 import { SumarizeForm } from "./SumarizeForm";
 import { SummaryCard } from "./SummaryCard";
@@ -23,7 +24,9 @@ export function Dashboard() {
         <SummaryCard />
         <SummaryCard />
         </div>
-        <div className="right-sidebar w-3/12 max-md:hidden"></div>
+        <div className="right-sidebar w-3/12 max-md:hidden">
+          <KiratControllers />
+        </div>
         <MobileFormPopup/>
       </section>
     </Container>
