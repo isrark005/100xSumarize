@@ -21,11 +21,13 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); 
   const summaryWrapperRef = useRef<HTMLDivElement>(null);
+  const [totalNumberofPages, setTotalNumberofPages] = useState(0)
 
   useEffect(() => {
     const loadSummaries = async (page = 1) => {
       try {
         const data = await FetchSummaries(page); 
+        setTotalNumberofPages(data.totalItems)
         setSummaries((prevSummaries) => [...prevSummaries, ...data.summaries]);
       } catch (error) {
         console.error("Error fetching summaries:", error);
@@ -79,7 +81,7 @@ export function Dashboard() {
             )}
           </div>
           <div className="right-sidebar w-3/12 max-md:hidden">
-            {isLogin && <KiratControllers />}
+            {isLogin && <KiratControllers totalNumberOfEntried={totalNumberofPages} />}
           </div>
           <MobileFormPopup />
         </section>
