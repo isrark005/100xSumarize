@@ -6,6 +6,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isKiratState } from "../../store/selector";
 import { authState } from "../../store/atom";
 import { LogoutKirat } from "../../api/auth";
+import { toast } from "sonner";
 
 export function Header() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -20,6 +21,7 @@ export function Header() {
     .then((res) => {
       console.log(res.message); 
       setAuth(null); 
+      toast.success('Logged out')
     })
     .catch((error) => {
       console.error("Logout failed:", error.message || error);

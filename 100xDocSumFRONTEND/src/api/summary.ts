@@ -79,3 +79,21 @@ export const MarkSummaryAsDone = async (id: string) => {
     throw new Error(error.response?.data?.message || 'Something went wrong');
   }
 };
+
+
+export const ClearData = async () => {
+  try {
+    const response = await axios.delete(`${config.baseUrl}/summaries/clear`, {
+      withCredentials: true, 
+    });
+
+    if (response.status === 200) {
+      return response.data; 
+    } else {
+      throw new Error('Error clearing database');
+    }
+  } catch (error: any) {
+    console.error("Error in ClearData:", error.message || error);
+    throw new Error(error.response?.data?.message || 'Something went wrong');
+  }
+};

@@ -6,6 +6,7 @@ import { SummaryUpdateForm } from "./SummaryUpdateForm";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { submissionFlagState } from "../../store/atom";
 import { useRecoilValue } from "recoil";
+import { toast } from "sonner";
 
 type formDataT = {
   name: string;
@@ -69,6 +70,7 @@ export function SumarizeForm() {
     setAlreadyExsist(false);
     setLoadingStage(null);
     setPublished(true);
+    toast.success('Published question with summary successfully');
   };
 
   const resetForm = () => {

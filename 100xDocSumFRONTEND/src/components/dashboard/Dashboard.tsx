@@ -8,6 +8,7 @@ import { SummaryCardWrapper } from "./SummaryCardWrapper";
 import { authState } from "../../store/atom";
 import { FetchSummaries } from "../../api/summary";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { Toaster } from "sonner";
 
 // interface SummariesResponse {
 //   summaries: initialResponse[];
@@ -21,7 +22,11 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); 
   const summaryWrapperRef = useRef<HTMLDivElement>(null);
-  const [totalNumberofPages, setTotalNumberofPages] = useState(0)
+  const [totalNumberofPages, setTotalNumberofPages] = useState(0);
+
+  const clearSummaries = ()=> {
+    setSummaries([])
+  }
 
   useEffect(() => {
     const loadSummaries = async (page = 1) => {
@@ -81,9 +86,10 @@ export function Dashboard() {
             )}
           </div>
           <div className="right-sidebar w-3/12 max-md:hidden">
-            {isLogin && <KiratControllers totalNumberOfEntried={totalNumberofPages} />}
+            {isLogin && <KiratControllers totalNumberOfEntried={totalNumberofPages} clearSummaryCallBack={clearSummaries} />}
           </div>
           <MobileFormPopup />
+        <Toaster position="bottom-right" expand={true} />
         </section>
       </Container>
     </main>
