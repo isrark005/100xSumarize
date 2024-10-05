@@ -4,6 +4,8 @@ import { MyQuestion } from "../../api/summary";
 import { useState } from "react";
 import { SummaryUpdateForm } from "./SummaryUpdateForm";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { submissionFlagState } from "../../store/atom";
+import { useRecoilValue } from "recoil";
 
 type formDataT = {
   name: string;
@@ -31,28 +33,41 @@ export function SumarizeForm() {
   const [alreadyExsist, setAlreadyExsist] = useState(false);
   const [published, setPublished] = useState(false);
   const [loadingStage, setLoadingStage] = useState<string | null>(null);
+  const submissionFlag = useRecoilValue(submissionFlagState);
 
   const submitForm = (formData: formDataT) => {
-    setLoadingStage("Scraping data from notion page..."); 
-
+    setLoadingStage("Scraping data from notion page...");
+  
     // Simulate scraping phase
     setTimeout(() => {
       setLoadingStage("Summarizing your question...");
-
+  
       MyQuestion(formData)
         .then((res: initialResponse) => {
           setGotSummary(res);
-          setLoadingStage(null); 
+          setLoadingStage(null);
+  
           if (res?.alreadyExists) setAlreadyExsist(true);
         })
-        .catch((res) => {
-          console.log(res);
+        .catch((error: any) => {
+          
+          if (error.message === "Not accepting entries currently") {
+            console.log("Submissions are closed. Please try again later.");
+          } else {
+            console.error("An error occurred while submitting:", error);
+          }
+  
+          
           setLoadingStage(null);
         });
-    }, 3000); 
+    }, 3000);
   };
+  
 
   const handlePublished = () => {
+    setGotSummary(null);
+    setAlreadyExsist(false);
+    setLoadingStage(null);
     setPublished(true);
   };
 
@@ -74,27 +89,32 @@ export function SumarizeForm() {
       
       {!gotSummary ? (
         <form onSubmit={handleSubmit(submitForm)}>
+          <fieldset disabled={!submissionFlag}>
           <InputBox
             label="Name"
             {...register("name", {
               required: "Please enter your name",
             })}
+            disableField={!submissionFlag}
           />
           <InputBox
             label="Notion Public URL"
             {...register("notionUrl", {
               required: "Please enter the Notion URL",
             })}
+            disableField={!submissionFlag}
           />
           <InputBox
             label="Twitter (Optional)"
             {...register("twitterUrl", {
               required: false,
             })}
+            disableField={!submissionFlag}
           />
-          <button className="w-full bg-blue-400 text-white py-2 font-mono uppercase rounded-md mt-4 hover:bg-blue-700 transition">
+          <button className={`w-full ${submissionFlag ? "bg-blue-400 hover:bg-blue-700" : "bg-gray-400"} text-white py-2 font-mono uppercase rounded-md mt-4  transition`}>
             Continue
           </button>
+          </fieldset>
         </form>
         ) : (
         <SummaryUpdateForm summaryRes={gotSummary} callBackHandlePublished={handlePublished} />

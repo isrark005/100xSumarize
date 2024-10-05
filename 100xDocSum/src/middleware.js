@@ -1,6 +1,6 @@
-
 import pkg from 'jsonwebtoken';
 import { config } from './config.js';
+import { SummaryFlagModel } from './db.js';
 const { verify } = pkg;
 
 export const onlyKiratRoutes = (req, res, next) => {
@@ -22,3 +22,18 @@ export const onlyKiratRoutes = (req, res, next) => {
       return res.status(401).json({ message: 'Token verification failed' });
     }
   };
+
+  export const acceptingSubmissionMiddleware = async (req, res, next) => {
+    try {
+      const submissionFlag = await SummaryFlagModel.findOne();
+  
+      if (submissionFlag?.acceptEntry) {
+        return next();
+      } else {
+        return res.status(401).json({ message: 'Not accepting entries currently' });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+  };
+  

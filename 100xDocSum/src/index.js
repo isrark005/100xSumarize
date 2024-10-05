@@ -4,7 +4,7 @@ import { config } from './config.js';
 import { generateToken, getPageContent, summarizeContent } from './utils.js';
 import { SummaryDataModel, SummaryFlagModel } from './db.js';
 import cors from 'cors';
-import { onlyKiratRoutes } from './middleware.js';
+import { acceptingSubmissionMiddleware, onlyKiratRoutes } from './middleware.js';
 import cookieParser from 'cookie-parser';
 const app = express();
 
@@ -19,12 +19,12 @@ app.use(cookieParser());
 // check if accepting entries
 app.get('/submission-flag/status', async (req, res) => {
     const submissionFlag = await SummaryFlagModel.findOne();
-    
+
     res.json({ acceptingSubmissions: submissionFlag?.acceptEntry });
-  });
+});
 
 
-app.post('/my-question', async (req, res) => {
+app.post('/my-question', acceptingSubmissionMiddleware, async (req, res) => {
     const data = req.body;
 
     try {
@@ -67,7 +67,7 @@ app.post('/my-question', async (req, res) => {
     }
 });
 
-app.patch('/summary-update', async (req, res) => {
+app.patch('/summary-update', acceptingSubmissionMiddleware, async (req, res) => {
     const { _id, docSummary } = req.body;
 
     try {
@@ -101,7 +101,9 @@ app.get('/summaries', async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
+       
         const summaries = await SummaryDataModel.find({ status: 'published' })
+            .sort({ updatedAt: -1 })
             .skip(skip)
             .limit(limit)
             .exec();
@@ -119,6 +121,7 @@ app.get('/summaries', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 // auth
 app.post('/auth/login-kirat', (req, res) => {
@@ -139,7 +142,7 @@ app.post('/auth/login-kirat', (req, res) => {
 });
 
 app.get('/auth/verify-kirat', (req, res) => {
-    
+
     const token = req.cookies.summaryAuthToken;
     if (!token) {
         return res.status(400).json({ isAuthenticated: false });
@@ -155,34 +158,67 @@ app.get('/auth/verify-kirat', (req, res) => {
 });
 
 app.post('/auth/logout', (req, res) => {
-   
-    res.clearCookie('summaryAuthToken', {
+    try {
+      const token = req.cookies.summaryAuthToken;
+  
+      if (!token) {
+        return res.status(400).json({ message: 'No authentication token found' });
+      }
+  
+      res.clearCookie('summaryAuthToken', {
         httpOnly: true,
         secure: true,
         sameSite: "none"
-    });
-
-    return res.status(200).json({ message: 'Logged out successfully' });
-});
+      });
+  
+      return res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error during logout', error: error.message });
+    }
+  });
+  
 
 // only kirat routes 
-app.get('/summary/mark-done', onlyKiratRoutes, (req, res) => {
-    res.json({ message: 'Summary marked as done' });
-});
+app.get('/summary/mark-done', onlyKiratRoutes, async (req, res) => {
+    try {
+      const { id } = req.query; 
+      if (!id) {
+        return res.status(400).json({ message: 'ID is required' });
+      }
+      const deletedSummary = await SummaryModel.findByIdAndDelete(id);
+      if (!deletedSummary) {
+        return res.status(404).json({ message: 'Summary not found' });
+      }
+  
+      return res.status(200).json({ message: 'Summary marked as done and deleted' });
+    } catch (error) {
+      console.error("Error marking summary as done:", error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
 
 // toggle submission flag
 app.post('/submission-flag/toggle', onlyKiratRoutes, async (req, res) => {
-    let submissionFlag = await SummaryFlagModel.findOne();
+    try {
+        let submissionFlag = await SummaryFlagModel.findOne();
 
-    if (!submissionFlag) {
-      submissionFlag = new SummaryFlagModel();
+        if (!submissionFlag) {
+            submissionFlag = new SummaryFlagModel();
+        }
+
+        submissionFlag.acceptEntry = !submissionFlag.acceptEntry;
+        await submissionFlag.save();
+
+        res.status(200).json({ 
+            message: `Submissions are now ${submissionFlag.acceptEntry ? 'open' : 'closed'}`, 
+            submissionFlag: submissionFlag.acceptEntry 
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to toggle submission flag', error: error.message });
     }
-  
-  submissionFlag.acceptEntry = !submissionFlag.acceptEntry;
-  await submissionFlag.save();
-
-  res.json({ message: `Submissions are now ${submissionFlag.acceptEntry ? 'open' : 'closed'}` });
 });
+
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
