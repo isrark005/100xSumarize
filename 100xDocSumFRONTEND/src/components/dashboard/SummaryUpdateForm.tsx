@@ -17,7 +17,7 @@ export function SummaryUpdateForm({ summaryRes, callBackHandlePublished }: Summa
   const summaryLetterCount = watch("summary").length;
 
   const handleSummaryUpdate = (summaryData: any) => {
-    console.log(summaryData)
+   
 
     const reqBody = {
       _id: summaryRes._id,
