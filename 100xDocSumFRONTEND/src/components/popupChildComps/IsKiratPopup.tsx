@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { authState } from "../../store/atom";
 import { LoginKirat } from "../../api/auth";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { toast } from "sonner";
 
 type IsKiratPopupProps = {
     closePopupCallBackFnc: ()=> void
@@ -21,11 +22,12 @@ const [error, setError] = useState('')
       LoginKirat(passwordValue)
         .then((_) => {
             setAuth(true)
-            closePopupCallBackFnc()
+            closePopupCallBackFnc();
+            toast.success('Welcome Kirat!')
         })
         .catch(() => {
             setError("Incorrect password!")
-            
+            toast.success('Error logging in')
         })
         .finally(() => setIsLoading(false));
     }else {

@@ -8,6 +8,7 @@ import { SummaryCardWrapper } from "./SummaryCardWrapper";
 import { authState } from "../../store/atom";
 import { FetchSummaries } from "../../api/summary";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { Toaster } from "sonner";
 
 // interface SummariesResponse {
 //   summaries: initialResponse[];
@@ -21,7 +22,13 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); 
   const summaryWrapperRef = useRef<HTMLDivElement>(null);
-  const [totalNumberofPages, setTotalNumberofPages] = useState(0)
+  const [totalNumberofPages, setTotalNumberofPages] = useState(0);
+
+  const clearSummaries = ()=> {
+    console.log("entered clearsummaries function")
+    setSummaries((_)=> []);
+    setCurrentPage(1);
+  }
 
   useEffect(() => {
     const loadSummaries = async (page = 1) => {
@@ -43,7 +50,7 @@ export function Dashboard() {
     const handleScroll = () => {
       if (summaryWrapperRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = summaryWrapperRef.current;
-        if (scrollTop + clientHeight >= scrollHeight - 1) {
+        if (scrollTop + clientHeight >= scrollHeight - 1 && currentPage > totalNumberofPages) {
           setCurrentPage((prevPage) => prevPage + 1); 
         }
       }
@@ -70,7 +77,7 @@ export function Dashboard() {
           </div>
           <div
             ref={summaryWrapperRef}
-            className="main-section w-6/12 border-l p-4 overflow-y-auto flex flex-col gap-4 max-md:w-full"
+            className="main-section w-6/12 border-r border-l p-4 overflow-y-auto flex flex-col gap-4 max-md:w-full"
           >
             {!loading ? (
               <SummaryCardWrapper summaries={summaries} />
@@ -81,9 +88,10 @@ export function Dashboard() {
             )}
           </div>
           <div className="right-sidebar w-3/12 max-md:hidden">
-            {isLogin && <KiratControllers totalNumberOfEntried={totalNumberofPages} />}
+            {isLogin && <KiratControllers totalNumberOfEntried={totalNumberofPages} clearSummaryCallBack={clearSummaries} />}
           </div>
           <MobileFormPopup />
+        <Toaster position="bottom-right" expand={true} />
         </section>
       </Container>
     </main>

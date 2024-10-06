@@ -16,6 +16,12 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/', async (req, res)=> {
+    return res.status(200).json({
+        message: "healthy server"
+    })
+})
+
 // check if accepting entries
 app.get('/submission-flag/status', async (req, res) => {
     const submissionFlag = await SummaryFlagModel.findOne();
@@ -185,7 +191,7 @@ app.get('/summary/mark-done', onlyKiratRoutes, async (req, res) => {
       if (!id) {
         return res.status(400).json({ message: 'ID is required' });
       }
-      const deletedSummary = await SummaryModel.findByIdAndDelete(id);
+      const deletedSummary = await SummaryDataModel.findByIdAndDelete(id);
       if (!deletedSummary) {
         return res.status(404).json({ message: 'Summary not found' });
       }
@@ -196,6 +202,22 @@ app.get('/summary/mark-done', onlyKiratRoutes, async (req, res) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   });
+
+app.delete('/summaries/clear', onlyKiratRoutes, async (req, res)=> {
+    try {
+        
+        const result = await SummaryDataModel.deleteMany({});
+        res.status(200).json({
+            message: 'All summaries deleted successfully',
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'An error occurred while deleting summaries',
+            error: error.message
+        });
+    }
+})
   
 
 // toggle submission flag
@@ -220,6 +242,6 @@ app.post('/submission-flag/toggle', onlyKiratRoutes, async (req, res) => {
 });
 
 
-app.listen(3000, () => {
+app.listen(config.port, () => {
     console.log('Server is running on port 3000');
 });
