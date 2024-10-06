@@ -70,7 +70,9 @@ export function SumarizeForm() {
     setAlreadyExsist(false);
     setLoadingStage(null);
     setPublished(true);
-    toast.success('Published question with summary successfully');
+    toast.success('Published question with summary successfully', {
+      position: 'top-center'
+    });
   };
 
   const resetForm = () => {

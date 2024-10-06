@@ -25,7 +25,7 @@ export function Dashboard() {
   const [totalNumberofPages, setTotalNumberofPages] = useState(0);
 
   const clearSummaries = ()=> {
-    console.log("entered clearsummaries function")
+    // TODO: summaty isn't getting cleared
     setSummaries((_)=> []);
     setCurrentPage(1);
   }
