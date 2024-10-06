@@ -25,7 +25,9 @@ export function Dashboard() {
   const [totalNumberofPages, setTotalNumberofPages] = useState(0);
 
   const clearSummaries = ()=> {
-    setSummaries([])
+    console.log("entered clearsummaries function")
+    setSummaries((_)=> []);
+    setCurrentPage(1);
   }
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function Dashboard() {
     const handleScroll = () => {
       if (summaryWrapperRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = summaryWrapperRef.current;
-        if (scrollTop + clientHeight >= scrollHeight - 1) {
+        if (scrollTop + clientHeight >= scrollHeight - 1 && currentPage > totalNumberofPages) {
           setCurrentPage((prevPage) => prevPage + 1); 
         }
       }
@@ -75,7 +77,7 @@ export function Dashboard() {
           </div>
           <div
             ref={summaryWrapperRef}
-            className="main-section w-6/12 border-l p-4 overflow-y-auto flex flex-col gap-4 max-md:w-full"
+            className="main-section w-6/12 border-r border-l p-4 overflow-y-auto flex flex-col gap-4 max-md:w-full"
           >
             {!loading ? (
               <SummaryCardWrapper summaries={summaries} />

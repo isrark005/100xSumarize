@@ -16,6 +16,12 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/', async (req, res)=> {
+    return res.status(200).json({
+        message: "healthy server"
+    })
+})
+
 // check if accepting entries
 app.get('/submission-flag/status', async (req, res) => {
     const submissionFlag = await SummaryFlagModel.findOne();
